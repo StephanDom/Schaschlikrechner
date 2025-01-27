@@ -6,20 +6,19 @@
     <title>Schaschlik Einkaufsliste</title>
 
     <style>
-        /* styles.css */
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center; /* Zentriert den Inhalt horizontal */
-            align-items: center; /* Zentriert den Inhalt vertikal */
-            min-height: 100vh; /* Minimale Höhe 100% des Viewports */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
             background-color: #f9f9f9;
         }
 
         .container {
-            width: 80%; /* Die Breite auf 80% des Bildschirmes setzen */
-            max-width: 800px; /* Maximale Breite auf 800px beschränken */
+            width: 80%;
+            max-width: 800px;
             padding: 20px;
             background-color: white;
             border-radius: 8px;
@@ -32,21 +31,30 @@
 
         label {
             margin-right: 10px;
+            font-weight: normal;
         }
 
         .input-group {
             display: flex;
-            justify-content: space-between; /* Die Eingabefelder nebeneinander anordnen */
+            justify-content: space-between;
             margin-bottom: 15px;
         }
 
+        .input-group div {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .input-group div:last-child {
+            margin-right: 0;
+        }
+
         input[type="number"] {
-            width: 30%; /* Jedes Eingabefeld bekommt 30% der Breite */
+            width: 80%; /* Schmaler gemacht */
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            min: 0; /* Mindestwert auf 0 setzen */
         }
 
         button {
@@ -65,46 +73,63 @@
             background-color: #45a049;
         }
 
+        .modi-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .modi-buttons button {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .modi-buttons button:last-child {
+            margin-right: 0;
+        }
+
+        .modi-buttons button.active-mode {
+            background-color: #4CAF50;
+            cursor: normal;
+        }
+
+        .modi-buttons button.inactive-mode {
+            background-color: #ddd;
+            cursor: pointer;
+        }
+
+        .italic {
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .input-group label {
+            font-size: 1.1em;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
-        th, td {
+        table, th, td {
             border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center; /* Standardmäßig zentriert */
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f4f4f4;
         }
 
-        td:first-child {
-            text-align: left; /* Zutaten linksbündig */
-        }
-
-        /* Für Bildschirme mit einer Breite von maximal 600px (typische Smartphones) */
-        @media (max-width: 600px) {
-            .input-group {
-                flex-direction: column; /* Eingabefelder untereinander anordnen */
-            }
-
-            input[type="number"] {
-                width: 100%; /* Die Eingabefelder füllen den Bildschirm */
-                margin-bottom: 10px; /* Etwas Abstand zwischen den Feldern */
-            }
-
-            button {
-                font-size: 16px; /* Größeren Button-Text */
-                padding: 10px; /* Mehr Platz im Button */
-            }
-
-            table {
-                font-size: 14px; /* Kleineren Text für die Tabelle */
-            }
-        }
     </style>
 </head>
 <body>
@@ -114,24 +139,27 @@
 
         <div class="input-group">
             <div>
-                <label for="maenner">Anzahl Männer:</label>
+                <label for="maenner" class="bold">Anzahl Männer:</label>
                 <input type="number" id="maenner" placeholder="Anzahl Männer" min="0" />
             </div>
 
             <div>
-                <label for="frauen">Anzahl Frauen:</label>
+                <label for="frauen" class="bold">Anzahl Frauen:</label>
                 <input type="number" id="frauen" placeholder="Anzahl Frauen" min="0" />
             </div>
 
             <div>
-                <label for="kinder">Anzahl Kinder:</label>
+                <label for="kinder" class="bold">Anzahl Kinder <span class="italic">(ab 12 J.)</span>:</label>
                 <input type="number" id="kinder" placeholder="Anzahl Kinder" min="0" />
             </div>
         </div>
 
         <h3>Berechnetes Fleischgewicht: <span id="fleischgewichtAnzeigen">0</span> kg</h3>
 
-        <button id="togglePreise">Preise anzeigen/ausblenden</button>
+        <div class="modi-buttons">
+            <button id="normalModus" class="active-mode">Normal</button>
+            <button id="feinschmeckerModus" class="inactive-mode">Feinschmecker</button>
+        </div>
 
         <h2>Einkaufsliste:</h2>
         <table id="einkaufsliste">
@@ -140,44 +168,38 @@
                     <th>Zutat</th>
                     <th>Menge</th>
                     <th>Einheit</th>
-                    <th class="preis-spalte" style="display: none;">Preis (€)</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Hier wird die Einkaufsliste als Tabellenzeilen angezeigt -->
             </tbody>
         </table>
-
-        <h3>Geschätzter Gesamtpreis: <span id="gesamtpreis">0.00</span> €</h3>
     </div>
 
     <script>
-        let preiseAnzeigen = false;
-
-        const preise = {
-            "Schweinekamm": 10, // Preis pro kg in Euro
-            "Zwiebeln": 1.5, // Preis pro kg
-            "Pfeffer": 6, // Preis pro 100 g
-            "Salz": 0.8, // Preis pro 500 g
-            "Gemahlener Koriander": 2, // Preis pro 50 g
-            "Kleine Dosen geschälte Tomaten": 1.2, // Preis pro Stück
-            "Lorbeerblätter": 0.2, // Preis pro Stück
-            "Eier": 0.35, // Preis pro Ei
-            "Kiwi": 0.7, // Preis pro Stück
-            "Essig": 2, // Preis pro 500 ml
-            "Mayonnaise": 6, // Preis pro kg
-            "Paprika Süß": 2 // Preis pro 100 g
-        };
+        let feinschmeckerModus = false;  // Startet mit Normalmodus
 
         document.getElementById('maenner').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('frauen').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('kinder').addEventListener('input', aktualisiereEinkaufsliste);
-        document.getElementById('togglePreise').addEventListener('click', togglePreise);
+        document.getElementById('normalModus').addEventListener('click', setNormalModus);
+        document.getElementById('feinschmeckerModus').addEventListener('click', setFeinschmeckerModus);
 
-        function togglePreise() {
-            preiseAnzeigen = !preiseAnzeigen;
-            const preisSpalten = document.querySelectorAll('.preis-spalte');
-            preisSpalten.forEach(spalte => spalte.style.display = preiseAnzeigen ? '' : 'none');
+        function setNormalModus() {
+            feinschmeckerModus = false;
+            document.getElementById('normalModus').classList.add("active-mode");
+            document.getElementById('feinschmeckerModus').classList.add("inactive-mode");
+            document.getElementById('feinschmeckerModus').classList.remove("active-mode");
+            document.getElementById('normalModus').classList.remove("inactive-mode");
+            aktualisiereEinkaufsliste();
+        }
+
+        function setFeinschmeckerModus() {
+            feinschmeckerModus = true;
+            document.getElementById('normalModus').classList.add("inactive-mode");
+            document.getElementById('feinschmeckerModus').classList.add("active-mode");
+            document.getElementById('normalModus').classList.remove("active-mode");
+            document.getElementById('feinschmeckerModus').classList.remove("inactive-mode");
             aktualisiereEinkaufsliste();
         }
 
@@ -186,10 +208,20 @@
             let frauen = parseInt(document.getElementById('frauen').value) || 0;
             let kinder = parseInt(document.getElementById('kinder').value) || 0;
 
-            let fleischgewicht = (maenner * 400 + frauen * 250 + kinder * 150) / 1000; // Gesamtgewicht in kg
+            // Gewichtsanpassung je nach Modus
+            if (feinschmeckerModus) {
+                maenner *= 500;
+                frauen *= 300;
+                kinder *= 200;
+            } else {
+                maenner *= 400;
+                frauen *= 250;
+                kinder *= 150;
+            }
+
+            let fleischgewicht = (maenner + frauen + kinder) / 1000;
             document.getElementById('fleischgewichtAnzeigen').textContent = fleischgewicht.toFixed(2);
 
-            // Zutaten basierend auf dem Fleischgewicht (in kg)
             const zutaten = {
                 "Schweinekamm": fleischgewicht,
                 "Zwiebeln": fleischgewicht / 3,
@@ -201,56 +233,41 @@
                 "Eier": (fleischgewicht * 2) / 3,
                 "Kiwi": fleischgewicht / 3,
                 "Essig": fleischgewicht,
-                "Mayonnaise": fleischgewicht * 0.10, // Mayonnaise als 10% vom Fleischgewicht in kg
-                "Paprika Süß": (fleischgewicht * 3) / 6 // 3 EL auf 6 kg Fleisch
+                "Mayonnaise": fleischgewicht * 0.10,
+                "Paprika Süß": (fleischgewicht * 3) / 6
             };
 
             const einkaufsliste = document.getElementById('einkaufsliste').getElementsByTagName('tbody')[0];
-            einkaufsliste.innerHTML = ""; // Vorherige Tabelle löschen
-
-            let gesamtpreis = 0;
+            einkaufsliste.innerHTML = "";
 
             for (let zutat in zutaten) {
                 const menge = zutaten[zutat];
                 let einheit;
-                let preis = 0;
 
                 if (zutat === "Schweinekamm") {
                     einheit = "kg";
-                    preis = menge * preise[zutat];
                 } else if (zutat === "Zwiebeln") {
                     einheit = "kg";
-                    preis = menge * preise[zutat];
                 } else if (zutat === "Pfeffer" || zutat === "Gemahlener Koriander" || zutat === "Paprika Süß") {
                     einheit = "EL";
-                    preis = (menge * 10) / 100 * preise[zutat]; // 1 EL ~ 10 g
                 } else if (zutat === "Salz") {
                     einheit = "EL";
-                    preis = (menge * 12) / 500 * preise[zutat]; // 1 EL ~ 12 g
                 } else if (zutat === "Essig") {
                     einheit = "EL";
-                    preis = (menge * 15) / 500 * preise[zutat]; // 1 EL ~ 15 ml
                 } else if (zutat === "Kleine Dosen geschälte Tomaten" || zutat === "Lorbeerblätter" || zutat === "Eier" || zutat === "Kiwi") {
                     einheit = "Stück";
-                    preis = menge * preise[zutat];
                 } else if (zutat === "Mayonnaise") {
                     einheit = "kg";
-                    preis = menge * preise[zutat];
                 }
-
-                gesamtpreis += preis;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${zutat}</td>
                     <td>${menge.toFixed(2)}</td>
                     <td>${einheit}</td>
-                    <td class="preis-spalte" style="display: ${preiseAnzeigen ? '' : 'none'};">${preis.toFixed(2)}</td>
                 `;
                 einkaufsliste.appendChild(tr);
             }
-
-            document.getElementById('gesamtpreis').textContent = gesamtpreis.toFixed(2);
         }
     </script>
 </body>
