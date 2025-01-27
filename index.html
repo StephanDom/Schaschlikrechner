@@ -50,16 +50,15 @@
         }
 
         button {
-            display: block;
-            width: 100%;
-            padding: 10px;
+            display: inline-block;
+            padding: 6px 12px;
             background-color: #4CAF50;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -98,8 +97,8 @@
             }
 
             button {
-                font-size: 18px; /* Größeren Button-Text */
-                padding: 12px; /* Mehr Platz im Button */
+                font-size: 16px; /* Größeren Button-Text */
+                padding: 10px; /* Mehr Platz im Button */
             }
 
             table {
@@ -132,7 +131,7 @@
 
         <h3>Berechnetes Fleischgewicht: <span id="fleischgewichtAnzeigen">0</span> kg</h3>
 
-        <button id="berechnen">Berechnen</button>
+        <button id="togglePreise">Preise anzeigen/ausblenden</button>
 
         <h2>Einkaufsliste:</h2>
         <table id="einkaufsliste">
@@ -141,20 +140,46 @@
                     <th>Zutat</th>
                     <th>Menge</th>
                     <th>Einheit</th>
+                    <th class="preis-spalte" style="display: none;">Preis (€)</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Hier wird die Einkaufsliste als Tabellenzeilen angezeigt -->
             </tbody>
         </table>
+
+        <h3>Geschätzter Gesamtpreis: <span id="gesamtpreis">0.00</span> €</h3>
     </div>
 
     <script>
-        // JavaScript Code
+        let preiseAnzeigen = false;
+
+        const preise = {
+            "Schweinekamm": 10, // Preis pro kg in Euro
+            "Zwiebeln": 1.5, // Preis pro kg
+            "Pfeffer": 6, // Preis pro 100 g
+            "Salz": 0.8, // Preis pro 500 g
+            "Gemahlener Koriander": 2, // Preis pro 50 g
+            "Kleine Dosen geschälte Tomaten": 1.2, // Preis pro Stück
+            "Lorbeerblätter": 0.2, // Preis pro Stück
+            "Eier": 0.35, // Preis pro Ei
+            "Kiwi": 0.7, // Preis pro Stück
+            "Essig": 2, // Preis pro 500 ml
+            "Mayonnaise": 6, // Preis pro kg
+            "Paprika Süß": 2 // Preis pro 100 g
+        };
 
         document.getElementById('maenner').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('frauen').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('kinder').addEventListener('input', aktualisiereEinkaufsliste);
+        document.getElementById('togglePreise').addEventListener('click', togglePreise);
+
+        function togglePreise() {
+            preiseAnzeigen = !preiseAnzeigen;
+            const preisSpalten = document.querySelectorAll('.preis-spalte');
+            preisSpalten.forEach(spalte => spalte.style.display = preiseAnzeigen ? '' : 'none');
+            aktualisiereEinkaufsliste();
+        }
 
         function aktualisiereEinkaufsliste() {
             let maenner = parseInt(document.getElementById('maenner').value) || 0;
@@ -180,37 +205,52 @@
                 "Paprika Süß": (fleischgewicht * 3) / 6 // 3 EL auf 6 kg Fleisch
             };
 
-            // Einkaufsliste aktualisieren
             const einkaufsliste = document.getElementById('einkaufsliste').getElementsByTagName('tbody')[0];
             einkaufsliste.innerHTML = ""; // Vorherige Tabelle löschen
+
+            let gesamtpreis = 0;
 
             for (let zutat in zutaten) {
                 const menge = zutaten[zutat];
                 let einheit;
+                let preis = 0;
+
                 if (zutat === "Schweinekamm") {
                     einheit = "kg";
+                    preis = menge * preise[zutat];
                 } else if (zutat === "Zwiebeln") {
                     einheit = "kg";
-                } else if (zutat === "Pfeffer" || zutat === "Salz" || zutat === "Gemahlener Koriander" || zutat === "Essig" || zutat === "Paprika Süß") {
+                    preis = menge * preise[zutat];
+                } else if (zutat === "Pfeffer" || zutat === "Gemahlener Koriander" || zutat === "Paprika Süß") {
                     einheit = "EL";
-                } else if (zutat === "Kleine Dosen geschälte Tomaten") {
+                    preis = (menge * 10) / 100 * preise[zutat]; // 1 EL ~ 10 g
+                } else if (zutat === "Salz") {
+                    einheit = "EL";
+                    preis = (menge * 12) / 500 * preise[zutat]; // 1 EL ~ 12 g
+                } else if (zutat === "Essig") {
+                    einheit = "EL";
+                    preis = (menge * 15) / 500 * preise[zutat]; // 1 EL ~ 15 ml
+                } else if (zutat === "Kleine Dosen geschälte Tomaten" || zutat === "Lorbeerblätter" || zutat === "Eier" || zutat === "Kiwi") {
                     einheit = "Stück";
-                } else if (zutat === "Lorbeerblätter") {
-                    einheit = "Stück";
-                } else if (zutat === "Eier" || zutat === "Kiwi") {
-                    einheit = "Stück";
+                    preis = menge * preise[zutat];
                 } else if (zutat === "Mayonnaise") {
                     einheit = "kg";
+                    preis = menge * preise[zutat];
                 }
-                
+
+                gesamtpreis += preis;
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${zutat}</td>
                     <td>${menge.toFixed(2)}</td>
                     <td>${einheit}</td>
+                    <td class="preis-spalte" style="display: ${preiseAnzeigen ? '' : 'none'};">${preis.toFixed(2)}</td>
                 `;
                 einkaufsliste.appendChild(tr);
             }
+
+            document.getElementById('gesamtpreis').textContent = gesamtpreis.toFixed(2);
         }
     </script>
 </body>
