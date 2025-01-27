@@ -152,18 +152,16 @@
     <script>
         // JavaScript Code
 
-        document.getElementById('maenner').addEventListener('input', berechneFleischgewicht);
-        document.getElementById('frauen').addEventListener('input', berechneFleischgewicht);
-        document.getElementById('kinder').addEventListener('input', berechneFleischgewicht);
+        document.getElementById('maenner').addEventListener('input', aktualisiereEinkaufsliste);
+        document.getElementById('frauen').addEventListener('input', aktualisiereEinkaufsliste);
+        document.getElementById('kinder').addEventListener('input', aktualisiereEinkaufsliste);
 
-        document.getElementById('berechnen').addEventListener('click', function() {
-            // Berechnung und Validierung
+        function aktualisiereEinkaufsliste() {
             let maenner = parseInt(document.getElementById('maenner').value) || 0;
             let frauen = parseInt(document.getElementById('frauen').value) || 0;
             let kinder = parseInt(document.getElementById('kinder').value) || 0;
-            
-            let fleischgewicht = (maenner * 400 + frauen * 250 + kinder * 150) / 1000; // Gesamtgewicht in kg
 
+            let fleischgewicht = (maenner * 400 + frauen * 250 + kinder * 150) / 1000; // Gesamtgewicht in kg
             document.getElementById('fleischgewichtAnzeigen').textContent = fleischgewicht.toFixed(2);
 
             // Zutaten basierend auf dem Fleischgewicht (in kg)
@@ -178,7 +176,8 @@
                 "Eier": (fleischgewicht * 2) / 3,
                 "Kiwi": fleischgewicht / 3,
                 "Essig": fleischgewicht,
-                "Mayonnaise": fleischgewicht * 0.10 // Mayonnaise als 10% vom Fleischgewicht in kg
+                "Mayonnaise": fleischgewicht * 0.10, // Mayonnaise als 10% vom Fleischgewicht in kg
+                "Paprika Süß": (fleischgewicht * 3) / 6 // 3 EL auf 6 kg Fleisch
             };
 
             // Einkaufsliste aktualisieren
@@ -192,7 +191,7 @@
                     einheit = "kg";
                 } else if (zutat === "Zwiebeln") {
                     einheit = "kg";
-                } else if (zutat === "Pfeffer" || zutat === "Salz" || zutat === "Gemahlener Koriander" || zutat === "Essig") {
+                } else if (zutat === "Pfeffer" || zutat === "Salz" || zutat === "Gemahlener Koriander" || zutat === "Essig" || zutat === "Paprika Süß") {
                     einheit = "EL";
                 } else if (zutat === "Kleine Dosen geschälte Tomaten") {
                     einheit = "Stück";
@@ -212,16 +211,6 @@
                 `;
                 einkaufsliste.appendChild(tr);
             }
-        });
-
-        function berechneFleischgewicht() {
-            // Berechnung des Fleischgewichts
-            let maenner = parseInt(document.getElementById('maenner').value) || 0;
-            let frauen = parseInt(document.getElementById('frauen').value) || 0;
-            let kinder = parseInt(document.getElementById('kinder').value) || 0;
-
-            let fleischgewicht = (maenner * 400 + frauen * 250 + kinder * 150) / 1000; // Gesamtgewicht in kg
-            document.getElementById('fleischgewichtAnzeigen').textContent = fleischgewicht.toFixed(2);
         }
     </script>
 </body>
