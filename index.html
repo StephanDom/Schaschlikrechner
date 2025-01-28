@@ -163,8 +163,8 @@
         <h3>Berechnetes Fleischgewicht: <span id="fleischgewichtAnzeigen">0</span> kg</h3>
 
         <div class="modi-buttons">
-            <button id="normalModus" class="active-mode">Normal</button>
-            <button id="feinschmeckerModus" class="inactive-mode">Feinschmecker</button>
+            <button id="normalModus" class="active-mode">Feinschmecker</button>
+            <button id="feinschmeckerModus" class="inactive-mode">Mehr-Esser</button>
         </div>
 
         <h2>Einkaufsliste:</h2>
@@ -183,15 +183,15 @@
     </div>
 
     <script>
-        let feinschmeckerModus = false;  // Startet mit Normalmodus
+        let feinschmeckerModus = false;  // Startet mit Feinschmeckermodus
 
         document.getElementById('maenner').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('frauen').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('kinder').addEventListener('input', aktualisiereEinkaufsliste);
-        document.getElementById('normalModus').addEventListener('click', setNormalModus);
-        document.getElementById('feinschmeckerModus').addEventListener('click', setFeinschmeckerModus);
+        document.getElementById('normalModus').addEventListener('click', setFeinschmeckerModus);
+        document.getElementById('feinschmeckerModus').addEventListener('click', setMehrEsserModus);
 
-        function setNormalModus() {
+        function setFeinschmeckerModus() {
             feinschmeckerModus = false;
             document.getElementById('normalModus').classList.add("active-mode");
             document.getElementById('feinschmeckerModus').classList.add("inactive-mode");
@@ -200,7 +200,7 @@
             aktualisiereEinkaufsliste();
         }
 
-        function setFeinschmeckerModus() {
+        function setMehrEsserModus() {
             feinschmeckerModus = true;
             document.getElementById('normalModus').classList.add("inactive-mode");
             document.getElementById('feinschmeckerModus').classList.add("active-mode");
