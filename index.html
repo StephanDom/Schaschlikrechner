@@ -214,15 +214,15 @@
             let frauen = parseInt(document.getElementById('frauen').value) || 0;
             let kinder = parseInt(document.getElementById('kinder').value) || 0;
 
-            // Gewichtsanpassung je nach Modus
+            // Gewichtsanpassung je nach Modus (getauscht)
             if (feinschmeckerModus) {
-                maenner *= 500;
-                frauen *= 300;
-                kinder *= 200;
+                maenner *= 500;  // Mehr-Esser-Modus für Männer
+                frauen *= 350;   // Mehr-Esser-Modus für Frauen
+                kinder *= 250;   // Mehr-Esser-Modus für Kinder
             } else {
-                maenner *= 400;
-                frauen *= 250;
-                kinder *= 150;
+                maenner *= 400;  // Feinschmecker-Modus für Männer
+                frauen *= 300;   // Feinschmecker-Modus für Frauen
+                kinder *= 200;   // Feinschmecker-Modus für Kinder
             }
 
             let fleischgewicht = (maenner + frauen + kinder) / 1000;
