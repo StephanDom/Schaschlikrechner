@@ -52,7 +52,7 @@
 
         .input-group div:nth-child(1),
         .input-group div:nth-child(2) {
-            margin-bottom: 10px; /* Adds space above first two inputs */
+            margin-bottom: 10px; /* Adds space above first zwei inputs */
         }
 
         input[type="number"] {
@@ -163,7 +163,7 @@
         <h3>Berechnetes Fleischgewicht: <span id="fleischgewichtAnzeigen">0</span> kg</h3>
 
         <div class="modi-buttons">
-            <button id="normalModus" class="active-mode">Feinschmecker</button>
+            <button id="normalModus" class="active-mode">Normal-Esser</button>
             <button id="feinschmeckerModus" class="inactive-mode">Mehr-Esser</button>
         </div>
 
@@ -183,15 +183,15 @@
     </div>
 
     <script>
-        let feinschmeckerModus = false;  // Startet mit Feinschmeckermodus
+        let feinschmeckerModus = false;  // Startet mit Normal-Esser Modus
 
         document.getElementById('maenner').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('frauen').addEventListener('input', aktualisiereEinkaufsliste);
         document.getElementById('kinder').addEventListener('input', aktualisiereEinkaufsliste);
-        document.getElementById('normalModus').addEventListener('click', setFeinschmeckerModus);
+        document.getElementById('normalModus').addEventListener('click', setNormalEsserModus);
         document.getElementById('feinschmeckerModus').addEventListener('click', setMehrEsserModus);
 
-        function setFeinschmeckerModus() {
+        function setNormalEsserModus() {
             feinschmeckerModus = false;
             document.getElementById('normalModus').classList.add("active-mode");
             document.getElementById('feinschmeckerModus').classList.add("inactive-mode");
@@ -220,9 +220,9 @@
                 frauen *= 350;   // Mehr-Esser-Modus für Frauen
                 kinder *= 250;   // Mehr-Esser-Modus für Kinder
             } else {
-                maenner *= 400;  // Feinschmecker-Modus für Männer
-                frauen *= 300;   // Feinschmecker-Modus für Frauen
-                kinder *= 200;   // Feinschmecker-Modus für Kinder
+                maenner *= 400;  // Normal-Esser-Modus für Männer
+                frauen *= 300;   // Normal-Esser-Modus für Frauen
+                kinder *= 200;   // Normal-Esser-Modus für Kinder
             }
 
             let fleischgewicht = (maenner + frauen + kinder) / 1000;
